@@ -1,26 +1,39 @@
 <?php /* @var $block \Magento\Bundle\Block\Catalog\Product\View\Type\Bundle\Option\Checkbox */ ?>
 <?php $_option = $block->getOption() ?>
 <?php $_selections = $_option->getSelections() ?>
+<?php $inputClass = 'checkbox product bundle option bundle-option-' . $block->escapeHtmlAttr($_option->getId()) ?>
+<?php $inputId = 'bundle-option-' . $block->escapeHtmlAttr($_option->getId()) ?>
+<?php $inputName = 'bundle_option[' . $block->escapeHtmlAttr($_option->getId()) . ']' ?>
+<?php $dataValidation = 'data-validate="{\'validate-one-required-by-name\':\'input[name^=&quot;bundle_option[' .
+    $block->escapeHtmlAttr($_option->getId()) . ']&quot;]:checked\'}"' ?>
+
 <div class="field option <?= ($_option->getRequired()) ? ' required': '' ?>">
     <label class="label">
         <span><?= $block->escapeHtml($_option->getTitle()) ?></span>
     </label>
     <div class="control">
         <div class="nested options-list">
-            <?php foreach($_selections as $_selection): ?>
+            <?php foreach($_selections as $selection): ?>
+                <?php $sectionId = $selection->getSelectionId() ?>
                 <div class="field choice">
                     <input class="bundle-option-<?= /* @escapeNotVerified */ $_option->getId() ?> checkbox product bundle option change-container-classname"
-                           id="bundle-option-<?= /* @escapeNotVerified */ $_option->getId() ?>-<?= /* @escapeNotVerified */ $_selection->getSelectionId() ?>"
+                           id="bundle-option-<?= /* @escapeNotVerified */ $_option->getId() ?>-<?= /* @escapeNotVerified */ $sectionId ?>"
                            type="checkbox"
-                           <?php if ($_option->getRequired()) /* @escapeNotVerified */ echo 'data-validate="{\'validate-one-required-by-name\':\'input[name^=&quot;bundle_option[' . $_option->getId() . ']&quot;]:checked\'}"'?>
-                           name="bundle_option[<?= /* @escapeNotVerified */ $_option->getId() ?>][<?= /* @escapeNotVerified */ $_selection->getId() ?>]"
-                           data-selector="bundle_option[<?= /* @escapeNotVerified */ $_option->getId() ?>][<?= /* @escapeNotVerified */ $_selection->getId() ?>]"
-                           <?php if ($block->isSelected($_selection)) echo ' checked="checked"' ?>
-                           <?php if (!$_selection->isSaleable()) echo ' disabled="disabled"' ?>
-                           value="<?= /* @escapeNotVerified */ $_selection->getSelectionId() ?>"/>
+                            <?php if ($_option->getRequired()): ?>
+                                <?= /* @noEscape */ $dataValidation ?>
+                            <?php endif; ?>
+                           name="<?=/* @noEscape */ $inputName .'['. $block->escapeHtmlAttr($sectionId)?>]"
+                           data-selector="<?= /* @noEscape */ $inputName.'['.$block->escapeHtmlAttr($sectionId)?>]"
+                        <?php if ($block->isSelected($selection)): ?>
+                            <?= ' checked="checked"' ?>
+                        <?php endif; ?>
+                        <?php if (!$selection->isSaleable()): ?>
+                            <?= ' disabled="disabled"' ?>
+                        <?php endif; ?>
+                           value="<?= /* @escapeNotVerified */ $sectionId ?>"/>
                     <label class="label"
-                           for="bundle-option-<?= /* @escapeNotVerified */ $_option->getId() ?>-<?= /* @escapeNotVerified */ $_selection->getSelectionId() ?>">
-                        <span class="product-details"><?= /* @escapeNotVerified */ $block->getSelectionQtyTitlePrice($_selection) ?></span>
+                           for="bundle-option-<?= /* @escapeNotVerified */ $_option->getId() ?>-<?= /* @escapeNotVerified */ $sectionId ?>">
+                        <span class="product-details"><?= /* @escapeNotVerified */ $block->getSelectionTitlePrice($selection) ?></span>
                     </label>
                     <div class="nested">
                         <div class="field qty qty-holder">
@@ -29,10 +42,10 @@
                             </label>
                             <div class="control">
                                 <input
-                                    id="bundle-option-<?= /* @escapeNotVerified */ $_option->getId() ?>-<?= /* @escapeNotVerified */ $_selection->getSelectionId() ?>-qty-input"
+                                    id="bundle-option-<?= /* @escapeNotVerified */ $_option->getId() ?>-<?= /* @escapeNotVerified */ $sectionId ?>-qty-input"
                                     class="input-text qty qty-disabled"
                                     type="number"
-                                    name="bundle_option_qty[<?= /* @escapeNotVerified */ $_option->getId() ?>][<?= /* @escapeNotVerified */ $_selection->getId() ?>]"
+                                    name="bundle_option_qty[<?= /* @escapeNotVerified */ $_option->getId() ?>][<?= /* @escapeNotVerified */ $selection->getId() ?>]"
                                     data-selector="bundle_option_qty[<?= /* @escapeNotVerified */ $_option->getId() ?>]"
                                     value="1"
                                     disabled="disabled"
@@ -42,6 +55,8 @@
                     </div>
                 </div>
             <?php endforeach; ?>
+            <div id="bundle-option-<?= $block->escapeHtmlAttr($_option->getId()) ?>-container"></div>
+            <div id="validation-message-box"></div>
         </div>
     </div>
 </div>
